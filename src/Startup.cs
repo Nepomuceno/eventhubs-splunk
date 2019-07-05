@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using splunk_eventhubs.Data;
+using splunk_eventhubs.Hubs;
+using splunk_eventhubs.Processor;
 
 namespace splunk_eventhubs
 {
@@ -15,6 +18,10 @@ namespace splunk_eventhubs
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.AddSignalR();
+            services.AddSingleton<ConsumersRepository>();
+            services.AddHostedService<LogProcessorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -24,11 +31,11 @@ namespace splunk_eventhubs
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseSignalR(r => r.MapHub<StatusHub>("/eh-status"));
+            
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
         }
     }
 }
