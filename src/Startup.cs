@@ -18,10 +18,11 @@ namespace splunk_eventhubs
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddHttpClient();
             services.AddSignalR();
             services.AddSingleton<ConsumersRepository>();
             services.AddHostedService<LogProcessorService>();
+            services.AddHttpClient<LogEventProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,8 +35,6 @@ namespace splunk_eventhubs
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseSignalR(r => r.MapHub<StatusHub>("/eh-status"));
-            
-
         }
     }
 }

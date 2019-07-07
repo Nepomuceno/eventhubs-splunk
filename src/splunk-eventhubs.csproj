@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.1" />
     <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="3.0.0" />
     <PackageReference Include="Microsoft.Azure.Management.EventHub" Version="2.5.0" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />

@@ -4,19 +4,58 @@
     <meta charset="utf-8" />
     <title>Event hubs</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="css/bootstap/css/bootstrap.min.css" />
 </head>
 
 <body>
     <div id="app">
-        {{ message }}
+        <ul class="list-group">
+            <li class="list-group-item" v-if="content" v-for="ns in content">
+                <h4>{{ ns.namespace }}</h4>
+                <ul class="list-group">
+                    <li class="list-group-item" v-for="eh in ns.ehs">
+                        <h5>{{eh.name}}</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item" v-for="partition in  eh.partitions">
+                                <small>Partition: {{ partition.name }} </small><br />
+                                <small>Sequence: {{ partition.lastReadSequenceNumber }}</small><br />
+                                <small>Offset: {{ partition.lastReadOffset }}</small>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </div>
+    <script src="/scripts/signalr/dist/browser/signalr.js"></script>
+    <script src="/scripts/axios/axios.min.js"></script>
     <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                message: 'Hello Vue!'
-            }
-        })
+
+        var app = new Vue(
+            {
+                el: '#app',
+                data: {
+                    content: null
+                },
+                created: function () {
+                    var connection = new signalR.HubConnectionBuilder().withUrl("/eh-status").build();
+                    connection.on("updateData", (data) => {
+                        console.info("updated:");
+                        console.info(data);
+                        console.info(this);
+                        this.content = data;
+                    });
+                    connection.start().then(r => {
+                        console.info(r);
+                        console.info("connected");
+                    }).catch(err => {
+                        console.error(err);
+                    })
+
+                }
+            });
+
     </script>
+
 </body>
 </html>

@@ -1,12 +1,19 @@
-﻿using Microsoft.Azure.Management.EventHub;
+﻿using Microsoft.Azure.EventHubs;
+using Microsoft.Azure.EventHubs.Processor;
+using Microsoft.Azure.Management.EventHub;
+using Microsoft.Azure.Management.EventHub.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 using splunk_eventhubs.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,17 +23,101 @@ namespace splunk_eventhubs.Processor
     {
         private readonly ConsumersRepository _consumersRepository;
         private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
+        private readonly List<EventProcessorHost> _eventProcessorHosts;
 
         public LogProcessorService(ConsumersRepository consumersRepository, IConfiguration configuration)
         {
             _consumersRepository = consumersRepository;
             _configuration = configuration;
+            var httpMessageHandler = new HttpClientHandler();
+            httpMessageHandler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                if (cert.Thumbprint == _configuration["Consumer:splunk-cert"])
+                    return true;
+                return cert.Verify();
+            };
+            _httpClient = new HttpClient(httpMessageHandler);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Splunk {_configuration["Consumer:splunk-token"]}");
+            _httpClient.BaseAddress = new Uri(_configuration["Consumer:splunk-url"]);
+            _eventProcessorHosts = new List<EventProcessorHost>();
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            var consumerGroupName = _configuration["Consumer:consumer-group"];
+            var authorizationRuleName = _configuration["Consumer:authorization-rule"];
+            var prefix = _configuration["Consumer:prefix"];
+            var subscription = _configuration["Azure:subscription"];
             EventHubManagementClient ehClient = await GetEhClient();
-            ehClient.Namespaces.Get("resource-group", "namespace-name");
-            throw new NotImplementedException();
+            var ehDinifitions = await _consumersRepository.GetMonitoringEh();
+            var ehs = await GetConnectionStrings(consumerGroupName, authorizationRuleName, prefix, ehClient, ehDinifitions);
+            var storage = GetStorageConnection();
+            foreach (var eh in ehs)
+            {
+                EventProcessorHost processorHost =
+                    new EventProcessorHost(
+                        "splunk-host-processor",
+                        eh.ehName,
+                        eh.consumerGroup,
+                        eh.connectionString,
+                        storage.storageConnectionString,
+                        storage.container,
+                        $"{subscription}/{eh.ehName}/"
+                        );
+                await processorHost.RegisterEventProcessorFactoryAsync(
+                    new LogEventProcessorFactory(
+                        _consumersRepository,
+                        subscription,
+                        eh.resourceGroup,
+                        eh.ehNamespace,
+                        _httpClient));
+                _eventProcessorHosts.Add(processorHost);
+            }
+        }
+
+
+        private (string storageConnectionString, string container) GetStorageConnection()
+        {
+            string accountName = _configuration["Data:account-name"];
+            string accountKey = _configuration["Data:account-key"];
+            string storageEndpoint = _configuration["Data:storage-endpoint"];
+            string connectionString = $"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={accountKey};EndpointSuffix={storageEndpoint}";
+            return (connectionString, _configuration["Consumer:container"]);
+        }
+
+        private async Task<IEnumerable<(string resourceGroup, string ehNamespace, string ehName, string consumerGroup, string connectionString)>>
+            GetConnectionStrings(string consumerGroupName, string authorizationRuleName, string prefix, EventHubManagementClient ehClient, (string Subscription, string Namespace, string ResourceGroup)[] ehDinifitions)
+        {
+            List<(string resourceGroup, string ehNamespace, string ehName, string consumerGroup, string connectionString)> connectionStrings =
+                new List<(string resourceGroup, string ehNamespace, string ehName, string consumerGroup, string connectionString)>();
+            foreach (var ehDefinition in ehDinifitions)
+            {
+                var ehs = await ehClient.EventHubs.ListByNamespaceAsync(ehDefinition.ResourceGroup, ehDefinition.Namespace);
+                foreach (var eh in ehs)
+                {
+                    if (!string.IsNullOrEmpty(prefix) && !eh.Name.StartsWith(prefix))
+                    {
+                        continue;
+                    }
+                    var consumerGroup =
+                        await ehClient.ConsumerGroups.CreateOrUpdateAsync(
+                            ehDefinition.ResourceGroup,
+                            ehDefinition.Namespace,
+                            eh.Name, consumerGroupName,
+                            new ConsumerGroup()
+                            {
+                                UserMetadata = "automatically created croup for user consumption"
+                            });
+                    var authorizationRule = await ehClient.EventHubs.CreateOrUpdateAuthorizationRuleAsync(
+                        ehDefinition.ResourceGroup,
+                        ehDefinition.Namespace,
+                        eh.Name, authorizationRuleName, new AuthorizationRule() { Rights = new string[] { "Listen" } });
+                    var keys = await ehClient.EventHubs.ListKeysAsync(ehDefinition.ResourceGroup, ehDefinition.Namespace, eh.Name, authorizationRuleName);
+                    var connectionString = keys.PrimaryConnectionString;
+                    connectionStrings.Add((ehDefinition.ResourceGroup, ehDefinition.Namespace, eh.Name, consumerGroup.Name, connectionString));
+                }
+            }
+            return connectionStrings;
         }
 
         private async Task<EventHubManagementClient> GetEhClient()
@@ -50,8 +141,114 @@ namespace splunk_eventhubs.Processor
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            List<Task> closing = new List<Task>();
+            foreach (var eventProcessorHost in _eventProcessorHosts)
+            {
+                closing.Add(eventProcessorHost.UnregisterEventProcessorAsync());
+            }
+            Task.WaitAll(closing.ToArray());
+            return Task.CompletedTask;
         }
     }
-    
+
+
+    public class LogEventProcessorFactory : IEventProcessorFactory
+    {
+        private readonly ConsumersRepository _consumersRepository;
+        private readonly string subscription;
+        private readonly string resourceGroup;
+        private readonly string ehnamespace;
+        private readonly HttpClient httpClient;
+
+        public LogEventProcessorFactory(ConsumersRepository consumersRepository, string subscription, string resourceGroup, string ehnamespace, HttpClient httpClient)
+        {
+            _consumersRepository = consumersRepository;
+            this.subscription = subscription;
+            this.resourceGroup = resourceGroup;
+            this.ehnamespace = ehnamespace;
+            this.httpClient = httpClient;
+        }
+        public IEventProcessor CreateEventProcessor(PartitionContext context)
+        {
+            return new LogEventProcessor(_consumersRepository, subscription, resourceGroup, ehnamespace, httpClient);
+        }
+    }
+    public class LogEventProcessor : IEventProcessor
+    {
+        private readonly ConsumersRepository _consumersRepository;
+        private readonly string subscription;
+        private readonly string resourceGroup;
+        private readonly string ehnamespace;
+        private readonly HttpClient httpClient;
+
+        public LogEventProcessor(ConsumersRepository consumersRepository, string subscription, string resourceGroup, string ehnamespace, HttpClient httpClient)
+        {
+            _consumersRepository = consumersRepository;
+            this.subscription = subscription;
+            this.resourceGroup = resourceGroup;
+            this.ehnamespace = ehnamespace;
+            this.httpClient = httpClient;
+        }
+        public Task CloseAsync(PartitionContext context, CloseReason reason)
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task OpenAsync(PartitionContext context)
+        {
+            await _consumersRepository.OpenConnection(subscription, resourceGroup, ehnamespace, context);
+        }
+
+        public Task ProcessErrorAsync(PartitionContext context, Exception error)
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
+        {
+            EventData lastMessage = null;
+            StringBuilder sb = new StringBuilder();
+            foreach (var message in messages)
+            {
+                dynamic content = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(message.Body));
+                if (content.records != null)
+                {
+                    foreach (var record in content.records)
+                    {
+                        string sourcetype = "unknown";
+                        if (record.category != null)
+                        {
+                            sourcetype = ((string)record.category).ToLowerInvariant();
+                        }
+                        string postContent = JsonConvert.SerializeObject(new SplunkEvent(sourcetype, record));
+                        sb.AppendLine(postContent);
+                    }
+                } else if (content.resourceId != null)
+                {
+                    string postContent = JsonConvert.SerializeObject(new SplunkEvent("machine-diagnoistics", content));
+                    sb.AppendLine(postContent);
+                }
+                lastMessage = message;
+            }
+            if (sb.Length > 0)
+            {
+                var response = await httpClient.PostAsync("/services/collector", new StringContent(sb.ToString()));
+            }
+
+            if (lastMessage != null)
+            {
+                await _consumersRepository.UpdateCount(subscription, resourceGroup, ehnamespace, context, lastMessage);
+            }
+        }
+        private class SplunkEvent
+        {
+            public SplunkEvent(string sourcetype, dynamic eventcontent)
+            {
+                this.sourcetype = sourcetype;
+                this.@event = eventcontent;
+            }
+            public string sourcetype { get; set; }
+            public dynamic @event { get; set; }
+        }
+    }
 }
