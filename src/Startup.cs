@@ -35,6 +35,14 @@ namespace splunk_eventhubs
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseSignalR(r => r.MapHub<StatusHub>("/eh-status"));
+            app.Map("/status", (b) =>
+             {
+                 app.Run(async context =>
+                 {
+                     context.Response.StatusCode = 200;
+                     await context.Response.WriteAsync("{ \"status\": \"OK\"}");
+                 });
+             });
         }
     }
 }

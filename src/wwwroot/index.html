@@ -1,32 +1,39 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Event hubs</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Azure consumer splunk</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <link rel="stylesheet" href="css/bootstap/css/bootstrap.min.css" />
+    <!--<link rel="stylesheet" href="css/bootstap/css/bootstrap.min.css" />-->
+    <link rel="stylesheet" href="css/bulma/css/bulma.min.css" />
 </head>
 
 <body>
-    <div id="app">
-        <ul class="list-group">
-            <li class="list-group-item" v-if="content" v-for="ns in content">
-                <h4>{{ ns.namespace }}</h4>
-                <ul class="list-group">
-                    <li class="list-group-item" v-for="eh in ns.ehs">
-                        <h5>{{eh.name}}</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item" v-for="partition in  eh.partitions">
-                                <small>Partition: {{ partition.name }} </small><br />
-                                <small>Sequence: {{ partition.lastReadSequenceNumber }}</small><br />
-                                <small>Offset: {{ partition.lastReadOffset }}</small>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+    <div class="container" id="app">
+        <section>
+            <img alt="ACE" src="assets/ace_logo.png"/>
+        </section>
+        <div class="content" v-if="content" v-for="ns in content">
+            <h2>{{ns.subscription}} / {{ ns.namespace }}</h2>
+            <br />
+            <div class="columns is-3 is-multiline">
+                <div class="column is-4 box" v-for="eh in ns.ehs">
+                    <h5>{{eh.name}}</h5>
+                    <h6 class="subtitle">{{eh.latestTimestamp}}</h6>
+
+                    <div v-for="partition in  eh.partitions">
+                        <small>Partition: {{ partition.name }} </small>
+                        <small>Sequence: {{ partition.lastReadSequenceNumber }}</small>
+                        <small>Offset: {{ partition.lastReadOffset }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <style>
+    </style>
     <script src="/scripts/signalr/dist/browser/signalr.js"></script>
     <script src="/scripts/axios/axios.min.js"></script>
     <script>

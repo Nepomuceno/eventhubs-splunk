@@ -22,6 +22,11 @@
       "library": "twitter-bootstrap@4.3.1",
       "destination": "wwwroot/css/bootstap",
       "files": [ "css/bootstrap.css", "css/bootstrap.min.css", "css/bootstrap.css.map", "css/bootstrap.min.css.map" ]
+    },
+    {
+      "library": "bulma@0.7.5",
+      "destination": "wwwroot/css/bulma",
+      "files": ["css/bulma.css","css/bulma.css.map", "css/bulma.min.css"]      
     }
 
 

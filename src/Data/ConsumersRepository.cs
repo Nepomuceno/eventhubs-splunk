@@ -125,6 +125,13 @@ namespace splunk_eventhubs.Data
         public class EhData
         {
             public string Name { get; set; }
+
+            public DateTime LatestTimestamp { get
+                {
+                    return Partitions.Max(p => p.Value.LastReadEnqueueTime);
+                }
+            }
+
             public Dictionary<string, PartitionData> Partitions { get; set; }
         }
         public class PartitionData
