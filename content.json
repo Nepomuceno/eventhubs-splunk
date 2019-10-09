@@ -1,0 +1,793 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-02T13:15:26Z",
+                "labels": {
+                    "component": "apiserver",
+                    "provider": "kubernetes"
+                },
+                "name": "kubernetes",
+                "namespace": "default",
+                "resourceVersion": "33",
+                "selfLink": "/api/v1/namespaces/default/services/kubernetes",
+                "uid": "ba6c9f25-cd83-11e9-a559-56e11581938c"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.1",
+                "ports": [
+                    {
+                        "name": "https",
+                        "port": 443,
+                        "protocol": "TCP",
+                        "targetPort": 443
+                    }
+                ],
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"kubernetes.io/cluster-service\":\"true\",\"kubernetes.io/name\":\"Heapster\"},\"name\":\"heapster\",\"namespace\":\"kube-system\"},\"spec\":{\"ports\":[{\"port\":80,\"targetPort\":8082}],\"selector\":{\"k8s-app\":\"heapster\"}}}\n"
+                },
+                "creationTimestamp": "2019-09-02T13:15:41Z",
+                "labels": {
+                    "kubernetes.io/cluster-service": "true",
+                    "kubernetes.io/name": "Heapster"
+                },
+                "name": "heapster",
+                "namespace": "kube-system",
+                "resourceVersion": "130",
+                "selfLink": "/api/v1/namespaces/kube-system/services/heapster",
+                "uid": "c37b4a67-cd83-11e9-a559-56e11581938c"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.81",
+                "ports": [
+                    {
+                        "port": 80,
+                        "protocol": "TCP",
+                        "targetPort": 8082
+                    }
+                ],
+                "selector": {
+                    "k8s-app": "heapster"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"k8s-app\":\"kube-dns\",\"kubernetes.io/cluster-service\":\"true\",\"kubernetes.io/name\":\"CoreDNS\"},\"name\":\"kube-dns\",\"namespace\":\"kube-system\"},\"spec\":{\"clusterIP\":\"172.18.0.10\",\"ports\":[{\"name\":\"dns\",\"port\":53,\"protocol\":\"UDP\"},{\"name\":\"dns-tcp\",\"port\":53,\"protocol\":\"TCP\"}],\"selector\":{\"k8s-app\":\"kube-dns\"}}}\n"
+                },
+                "creationTimestamp": "2019-09-02T13:15:41Z",
+                "labels": {
+                    "addonmanager.kubernetes.io/mode": "Reconcile",
+                    "k8s-app": "kube-dns",
+                    "kubernetes.io/cluster-service": "true",
+                    "kubernetes.io/name": "CoreDNS"
+                },
+                "name": "kube-dns",
+                "namespace": "kube-system",
+                "resourceVersion": "114",
+                "selfLink": "/api/v1/namespaces/kube-system/services/kube-dns",
+                "uid": "c352656c-cd83-11e9-a559-56e11581938c"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.10",
+                "ports": [
+                    {
+                        "name": "dns",
+                        "port": 53,
+                        "protocol": "UDP",
+                        "targetPort": 53
+                    },
+                    {
+                        "name": "dns-tcp",
+                        "port": 53,
+                        "protocol": "TCP",
+                        "targetPort": 53
+                    }
+                ],
+                "selector": {
+                    "k8s-app": "kube-dns"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"k8s-app\":\"kubernetes-dashboard\",\"kubernetes.io/cluster-service\":\"true\"},\"name\":\"kubernetes-dashboard\",\"namespace\":\"kube-system\"},\"spec\":{\"ports\":[{\"port\":80,\"targetPort\":\"http\"}],\"selector\":{\"k8s-app\":\"kubernetes-dashboard\"},\"type\":\"ClusterIP\"}}\n"
+                },
+                "creationTimestamp": "2019-09-02T13:15:43Z",
+                "labels": {
+                    "addonmanager.kubernetes.io/mode": "Reconcile",
+                    "k8s-app": "kubernetes-dashboard",
+                    "kubernetes.io/cluster-service": "true"
+                },
+                "name": "kubernetes-dashboard",
+                "namespace": "kube-system",
+                "resourceVersion": "195",
+                "selfLink": "/api/v1/namespaces/kube-system/services/kubernetes-dashboard",
+                "uid": "c466c74d-cd83-11e9-a559-56e11581938c"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.158",
+                "ports": [
+                    {
+                        "port": 80,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "k8s-app": "kubernetes-dashboard"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"kubernetes.io/cluster-service\":\"true\",\"kubernetes.io/name\":\"Metrics-server\"},\"name\":\"metrics-server\",\"namespace\":\"kube-system\"},\"spec\":{\"ports\":[{\"port\":443,\"protocol\":\"TCP\",\"targetPort\":443}],\"selector\":{\"k8s-app\":\"metrics-server\"}}}\n"
+                },
+                "creationTimestamp": "2019-09-02T13:15:42Z",
+                "labels": {
+                    "addonmanager.kubernetes.io/mode": "Reconcile",
+                    "kubernetes.io/cluster-service": "true",
+                    "kubernetes.io/name": "Metrics-server"
+                },
+                "name": "metrics-server",
+                "namespace": "kube-system",
+                "resourceVersion": "153",
+                "selfLink": "/api/v1/namespaces/kube-system/services/metrics-server",
+                "uid": "c3d85404-cd83-11e9-a559-56e11581938c"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.88",
+                "ports": [
+                    {
+                        "port": 443,
+                        "protocol": "TCP",
+                        "targetPort": 443
+                    }
+                ],
+                "selector": {
+                    "k8s-app": "metrics-server"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-02T14:08:16Z",
+                "labels": {
+                    "app": "helm",
+                    "name": "tiller"
+                },
+                "name": "tiller-deploy",
+                "namespace": "kube-system",
+                "resourceVersion": "5260",
+                "selfLink": "/api/v1/namespaces/kube-system/services/tiller-deploy",
+                "uid": "1bbad13f-cd8b-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.234",
+                "ports": [
+                    {
+                        "name": "tiller",
+                        "port": 44134,
+                        "protocol": "TCP",
+                        "targetPort": "tiller"
+                    }
+                ],
+                "selector": {
+                    "app": "helm",
+                    "name": "tiller"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "service.beta.kubernetes.io/azure-load-balancer-internal": "true"
+                },
+                "creationTimestamp": "2019-09-02T14:28:47Z",
+                "labels": {
+                    "app": "nginx-ingress",
+                    "chart": "nginx-ingress-1.4.0",
+                    "component": "controller",
+                    "heritage": "Tiller",
+                    "release": "nginx-ingress"
+                },
+                "name": "nginx-ingress-controller",
+                "namespace": "nginx",
+                "resourceVersion": "7648",
+                "selfLink": "/api/v1/namespaces/nginx/services/nginx-ingress-controller",
+                "uid": "f9bc524f-cd8d-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.254",
+                "externalTrafficPolicy": "Cluster",
+                "ports": [
+                    {
+                        "name": "http",
+                        "nodePort": 30899,
+                        "port": 80,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    },
+                    {
+                        "name": "https",
+                        "nodePort": 32050,
+                        "port": 443,
+                        "protocol": "TCP",
+                        "targetPort": "https"
+                    }
+                ],
+                "selector": {
+                    "app": "nginx-ingress",
+                    "component": "controller",
+                    "release": "nginx-ingress"
+                },
+                "sessionAffinity": "None",
+                "type": "LoadBalancer"
+            },
+            "status": {
+                "loadBalancer": {
+                    "ingress": [
+                        {
+                            "ip": "10.0.36.252"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-02T14:28:47Z",
+                "labels": {
+                    "app": "nginx-ingress",
+                    "chart": "nginx-ingress-1.4.0",
+                    "component": "default-backend",
+                    "heritage": "Tiller",
+                    "release": "nginx-ingress"
+                },
+                "name": "nginx-ingress-default-backend",
+                "namespace": "nginx",
+                "resourceVersion": "7550",
+                "selfLink": "/api/v1/namespaces/nginx/services/nginx-ingress-default-backend",
+                "uid": "f9c94a4f-cd8d-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.222",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 80,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "nginx-ingress",
+                    "component": "default-backend",
+                    "release": "nginx-ingress"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "external-dns.alpha.kubernetes.io/hostname": "splunk-deployment.tooling.iace.mod.gov.uk",
+                    "service.beta.kubernetes.io/azure-load-balancer-internal": "true"
+                },
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_cluster_deployment",
+                    "tier": "management"
+                },
+                "name": "deployment",
+                "namespace": "splunk",
+                "resourceVersion": "146010",
+                "selfLink": "/api/v1/namespaces/splunk/services/deployment",
+                "uid": "6de0cbd8-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.243",
+                "externalTrafficPolicy": "Cluster",
+                "ports": [
+                    {
+                        "name": "splunkweb",
+                        "nodePort": 31606,
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    },
+                    {
+                        "name": "splunkd",
+                        "nodePort": 32299,
+                        "port": 8089,
+                        "protocol": "TCP",
+                        "targetPort": 8089
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_cluster_deployment",
+                    "tier": "management"
+                },
+                "sessionAffinity": "None",
+                "type": "LoadBalancer"
+            },
+            "status": {
+                "loadBalancer": {
+                    "ingress": [
+                        {
+                            "ip": "10.0.36.251"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_indexer",
+                    "tier": "indexer"
+                },
+                "name": "indexer",
+                "namespace": "splunk",
+                "resourceVersion": "145496",
+                "selfLink": "/api/v1/namespaces/splunk/services/indexer",
+                "uid": "6e09c244-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "None",
+                "ports": [
+                    {
+                        "name": "splunkweb",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    },
+                    {
+                        "name": "splunkd",
+                        "port": 8089,
+                        "protocol": "TCP",
+                        "targetPort": 8089
+                    },
+                    {
+                        "name": "replication",
+                        "port": 4001,
+                        "protocol": "TCP",
+                        "targetPort": 4001
+                    },
+                    {
+                        "name": "s2s",
+                        "port": 9997,
+                        "protocol": "TCP",
+                        "targetPort": 9997
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_indexer",
+                    "tier": "indexer"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "service.beta.kubernetes.io/azure-load-balancer-internal": "true"
+                },
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_indexer",
+                    "tier": "indexer"
+                },
+                "name": "indexer-lb-9997",
+                "namespace": "splunk",
+                "resourceVersion": "145797",
+                "selfLink": "/api/v1/namespaces/splunk/services/indexer-lb-9997",
+                "uid": "6dfb6181-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.156",
+                "externalTrafficPolicy": "Cluster",
+                "ports": [
+                    {
+                        "name": "port-9997",
+                        "nodePort": 30547,
+                        "port": 9997,
+                        "protocol": "TCP",
+                        "targetPort": 9997
+                    },
+                    {
+                        "name": "port-8089",
+                        "nodePort": 32174,
+                        "port": 8089,
+                        "protocol": "TCP",
+                        "targetPort": 8089
+                    },
+                    {
+                        "name": "port-8000",
+                        "nodePort": 32105,
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_indexer",
+                    "tier": "indexer"
+                },
+                "sessionAffinity": "None",
+                "type": "LoadBalancer"
+            },
+            "status": {
+                "loadBalancer": {
+                    "ingress": [
+                        {
+                            "ip": "10.0.36.248"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "external-dns.alpha.kubernetes.io/hostname": "splunk-indexer.tooling.iace.mod.gov.uk",
+                    "service.beta.kubernetes.io/azure-load-balancer-internal": "true"
+                },
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_indexer",
+                    "tier": "indexer"
+                },
+                "name": "indexer-lb-hec",
+                "namespace": "splunk",
+                "resourceVersion": "145863",
+                "selfLink": "/api/v1/namespaces/splunk/services/indexer-lb-hec",
+                "uid": "6e07817c-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.160",
+                "externalTrafficPolicy": "Cluster",
+                "ports": [
+                    {
+                        "name": "hec",
+                        "nodePort": 30084,
+                        "port": 8088,
+                        "protocol": "TCP",
+                        "targetPort": 8088
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_indexer",
+                    "tier": "indexer"
+                },
+                "sessionAffinity": "None",
+                "type": "LoadBalancer"
+            },
+            "status": {
+                "loadBalancer": {
+                    "ingress": [
+                        {
+                            "ip": "10.0.36.249"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_cluster_master",
+                    "tier": "management"
+                },
+                "name": "master",
+                "namespace": "splunk",
+                "resourceVersion": "145502",
+                "selfLink": "/api/v1/namespaces/splunk/services/master",
+                "uid": "6e1f01f8-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "None",
+                "ports": [
+                    {
+                        "name": "splunkweb",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    },
+                    {
+                        "name": "splunkd",
+                        "port": 8089,
+                        "protocol": "TCP",
+                        "targetPort": 8089
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_cluster_master",
+                    "tier": "management"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_search_head",
+                    "tier": "search"
+                },
+                "name": "search",
+                "namespace": "splunk",
+                "resourceVersion": "145503",
+                "selfLink": "/api/v1/namespaces/splunk/services/search",
+                "uid": "6e233c46-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "None",
+                "ports": [
+                    {
+                        "name": "splunkweb",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    },
+                    {
+                        "name": "splunkd",
+                        "port": 8089,
+                        "protocol": "TCP",
+                        "targetPort": 8089
+                    },
+                    {
+                        "name": "kv",
+                        "port": 8191,
+                        "protocol": "TCP",
+                        "targetPort": 8191
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_search_head",
+                    "tier": "search"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2019-09-03T13:34:52Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk-defaults",
+                    "tier": "management"
+                },
+                "name": "splunk-defaults",
+                "namespace": "splunk",
+                "resourceVersion": "143734",
+                "selfLink": "/api/v1/namespaces/splunk/services/splunk-defaults",
+                "uid": "9c33566a-ce4f-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "None",
+                "ports": [
+                    {
+                        "name": "nginx-web",
+                        "port": 80,
+                        "protocol": "TCP",
+                        "targetPort": 80
+                    }
+                ],
+                "selector": {
+                    "name": "splunk-defaults"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "service.beta.kubernetes.io/azure-load-balancer-internal": "true"
+                },
+                "creationTimestamp": "2019-09-03T13:47:54Z",
+                "labels": {
+                    "app": "splunk",
+                    "role": "splunk_cluster_master",
+                    "tier": "management"
+                },
+                "name": "webui",
+                "namespace": "splunk",
+                "resourceVersion": "145935",
+                "selfLink": "/api/v1/namespaces/splunk/services/webui",
+                "uid": "6e1bce51-ce51-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.22",
+                "externalTrafficPolicy": "Cluster",
+                "ports": [
+                    {
+                        "name": "splunkweb",
+                        "nodePort": 30961,
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    }
+                ],
+                "selector": {
+                    "app": "splunk",
+                    "role": "splunk_cluster_master",
+                    "tier": "management"
+                },
+                "sessionAffinity": "None",
+                "type": "LoadBalancer"
+            },
+            "status": {
+                "loadBalancer": {
+                    "ingress": [
+                        {
+                            "ip": "10.0.36.250"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "cloud.weave.works/launcher-info": "{\n  \"original-request\": {\n    \"url\": \"/k8s/v1.10/scope.yaml?k8s-service-type=LoadBalancer\u0026k8s-version=Q2xpZW50IFZlcnNpb246IHZlcnNpb24uSW5mb3tNYWpvcjoiMSIsIE1pbm9yOiIxMSIsIEdpdFZlcnNpb246InYxLjExLjIiLCBHaXRDb21taXQ6ImJiOWZmYjE2NTRkNGE3MjliYjRjZWMxOGZmMDg4ZWFjYzE1M2MyMzkiLCBHaXRUcmVlU3RhdGU6ImNsZWFuIiwgQnVpbGREYXRlOiIyMDE4LTA4LTA4VDE2OjMxOjEwWiIsIEdvVmVyc2lvbjoiZ28xLjEwLjMiLCBDb21waWxlcjoiZ2MiLCBQbGF0Zm9ybToiZGFyd2luL2FtZDY0In0KU2VydmVyIFZlcnNpb246IHZlcnNpb24uSW5mb3tNYWpvcjoiMSIsIE1pbm9yOiIxMSIsIEdpdFZlcnNpb246InYxLjExLjEiLCBHaXRDb21taXQ6ImIxYjI5OTc4MjcwZGMyMmZlY2M1OTJhYzU1ZDkwMzM1MDQ1NDMxMGEiLCBHaXRUcmVlU3RhdGU6ImNsZWFuIiwgQnVpbGREYXRlOiIyMDE4LTA3LTE3VDE4OjQzOjI2WiIsIEdvVmVyc2lvbjoiZ28xLjEwLjMiLCBDb21waWxlcjoiZ2MiLCBQbGF0Zm9ybToibGludXgvYW1kNjQifQo=\",\n    \"date\": \"Mon Sep 24 2018 08:24:28 GMT+0000 (UTC)\"\n  },\n  \"email-address\": \"support@weave.works\"\n}",
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{\"cloud.weave.works/launcher-info\":\"{\\n  \\\"original-request\\\": {\\n    \\\"url\\\": \\\"/k8s/v1.10/scope.yaml?k8s-service-type=LoadBalancer\\u0026k8s-version=Q2xpZW50IFZlcnNpb246IHZlcnNpb24uSW5mb3tNYWpvcjoiMSIsIE1pbm9yOiIxMSIsIEdpdFZlcnNpb246InYxLjExLjIiLCBHaXRDb21taXQ6ImJiOWZmYjE2NTRkNGE3MjliYjRjZWMxOGZmMDg4ZWFjYzE1M2MyMzkiLCBHaXRUcmVlU3RhdGU6ImNsZWFuIiwgQnVpbGREYXRlOiIyMDE4LTA4LTA4VDE2OjMxOjEwWiIsIEdvVmVyc2lvbjoiZ28xLjEwLjMiLCBDb21waWxlcjoiZ2MiLCBQbGF0Zm9ybToiZGFyd2luL2FtZDY0In0KU2VydmVyIFZlcnNpb246IHZlcnNpb24uSW5mb3tNYWpvcjoiMSIsIE1pbm9yOiIxMSIsIEdpdFZlcnNpb246InYxLjExLjEiLCBHaXRDb21taXQ6ImIxYjI5OTc4MjcwZGMyMmZlY2M1OTJhYzU1ZDkwMzM1MDQ1NDMxMGEiLCBHaXRUcmVlU3RhdGU6ImNsZWFuIiwgQnVpbGREYXRlOiIyMDE4LTA3LTE3VDE4OjQzOjI2WiIsIEdvVmVyc2lvbjoiZ28xLjEwLjMiLCBDb21waWxlcjoiZ2MiLCBQbGF0Zm9ybToibGludXgvYW1kNjQifQo=\\\",\\n    \\\"date\\\": \\\"Mon Sep 24 2018 08:24:28 GMT+0000 (UTC)\\\"\\n  },\\n  \\\"email-address\\\": \\\"support@weave.works\\\"\\n}\",\"service.beta.kubernetes.io/azure-load-balancer-internal\":\"true\"},\"labels\":{\"app\":\"weave-scope\",\"name\":\"weave-scope-app\",\"weave-cloud-component\":\"scope\",\"weave-scope-component\":\"app\"},\"name\":\"weave-scope-app\",\"namespace\":\"weave\"},\"spec\":{\"ports\":[{\"name\":\"app\",\"port\":80,\"protocol\":\"TCP\",\"targetPort\":4040}],\"selector\":{\"app\":\"weave-scope\",\"name\":\"weave-scope-app\",\"weave-cloud-component\":\"scope\",\"weave-scope-component\":\"app\"},\"type\":\"LoadBalancer\"}}\n",
+                    "service.beta.kubernetes.io/azure-load-balancer-internal": "true"
+                },
+                "creationTimestamp": "2019-09-04T15:24:14Z",
+                "labels": {
+                    "app": "weave-scope",
+                    "name": "weave-scope-app",
+                    "weave-cloud-component": "scope",
+                    "weave-scope-component": "app"
+                },
+                "name": "weave-scope-app",
+                "namespace": "weave",
+                "resourceVersion": "295273",
+                "selfLink": "/api/v1/namespaces/weave/services/weave-scope-app",
+                "uid": "0db186f6-cf28-11e9-83af-1ef9fc352ba4"
+            },
+            "spec": {
+                "clusterIP": "172.18.0.191",
+                "externalTrafficPolicy": "Cluster",
+                "ports": [
+                    {
+                        "name": "app",
+                        "nodePort": 31079,
+                        "port": 80,
+                        "protocol": "TCP",
+                        "targetPort": 4040
+                    }
+                ],
+                "selector": {
+                    "app": "weave-scope",
+                    "name": "weave-scope-app",
+                    "weave-cloud-component": "scope",
+                    "weave-scope-component": "app"
+                },
+                "sessionAffinity": "None",
+                "type": "LoadBalancer"
+            },
+            "status": {
+                "loadBalancer": {
+                    "ingress": [
+                        {
+                            "ip": "10.0.36.253"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}
