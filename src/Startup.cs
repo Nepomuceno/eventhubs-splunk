@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using splunk_eventhubs.Data;
 using splunk_eventhubs.Hubs;
 using splunk_eventhubs.Processor;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace splunk_eventhubs
 {
@@ -23,11 +25,13 @@ namespace splunk_eventhubs
             services.AddSingleton<ConsumersRepository>();
             services.AddHostedService<LogProcessorService>();
             services.AddHttpClient<LogEventProcessor>();
+            services.AddLogging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

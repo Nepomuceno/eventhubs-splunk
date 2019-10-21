@@ -4,6 +4,7 @@ using Microsoft.Azure.Management.EventHub;
 using Microsoft.Azure.Management.EventHub.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Newtonsoft.Json;
@@ -25,8 +26,11 @@ namespace splunk_eventhubs.Processor
         private readonly HttpClient _httpClient;
         private readonly List<EventProcessorHost> _eventProcessorHosts;
 
-        public LogProcessorService(ConsumersRepository consumersRepository, IConfiguration configuration)
+        private readonly ILogger _logger;
+
+        public LogProcessorService(ConsumersRepository consumersRepository, IConfiguration configuration, ILogger<LogProcessorService> logger)
         {
+            _logger = logger;
             _consumersRepository = consumersRepository;
             _configuration = configuration;
             var httpMessageHandler = new HttpClientHandler();
@@ -37,12 +41,28 @@ namespace splunk_eventhubs.Processor
                 return true;
             };
             _httpClient = new HttpClient(httpMessageHandler);
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Splunk {_configuration["Consumer:splunk-token"]}");
+            string splunkToken = Environment.GetEnvironmentVariable("Consumer:splunk-token");
+            if(string.IsNullOrWhiteSpace(splunkToken))
+            {
+                Console.WriteLine("Empty splunk token on the environment");
+                splunkToken = _configuration["Consumer:splunk-token"];
+                if(string.IsNullOrWhiteSpace(splunkToken))
+                {
+                    Console.WriteLine("Empty splunk token");
+                }
+            }
+            if(!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DEBUG")))
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(Environment.GetEnvironmentVariables()));    
+            }
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Splunk {splunkToken}");
+            _httpClient.DefaultRequestHeaders.Add("user-agent", "Splunk Collector");
             _httpClient.BaseAddress = new Uri(_configuration["Consumer:splunk-url"]);
             _eventProcessorHosts = new List<EventProcessorHost>();
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogDebug("STARTING processing");
             var consumerGroupName = _configuration["Consumer:consumer-group"];
             var authorizationRuleName = _configuration["Consumer:authorization-rule"];
             var prefix = _configuration["Consumer:prefix"];
@@ -65,8 +85,10 @@ namespace splunk_eventhubs.Processor
                             storage.container,
                             $"{ehDefinition.Subscription}/{eh.ehName}/"
                             );
+                    _logger.LogDebug($"Adding processor host {ehDefinition.Subscription}/{eh.ehName}/");
                     processors.Add(processorHost.RegisterEventProcessorFactoryAsync(
                         new LogEventProcessorFactory(
+                            _logger,
                             _consumersRepository,
                             ehDefinition.Subscription,
                             eh.resourceGroup,
@@ -95,9 +117,11 @@ namespace splunk_eventhubs.Processor
                 new List<(string resourceGroup, string ehNamespace, string ehName, string consumerGroup, string connectionString)>();
             try
             {
+                _logger.LogDebug($"Getting access to {ehDefinition.Subscription}, {ehDefinition.ResourceGroup}, {ehDefinition.Namespace}");
                 var ehs = await ehClient.EventHubs.ListByNamespaceAsync(ehDefinition.ResourceGroup, ehDefinition.Namespace);
                 foreach (var eh in ehs)
                 {
+                    _logger.LogDebug($"Registering group for {eh.Id}");
                     if (!string.IsNullOrEmpty(prefix) && !eh.Name.StartsWith(prefix))
                     {
                         continue;
@@ -133,6 +157,7 @@ namespace splunk_eventhubs.Processor
             var context = new AuthenticationContext($"https://login.microsoftonline.com/{tenantId}");
             var clientId = _configuration.GetValue<string>("Azure:ClientId");
             var clientSecret = _configuration.GetValue<string>("Azure:ClientSecret");
+            _logger.LogDebug($"Tenant {tenantId} clientId {clientId} clientSecret {clientSecret}");
             var result = await context.AcquireTokenAsync(
                 "https://management.core.windows.net/",
                 new ClientCredential(clientId, clientSecret)
@@ -166,9 +191,11 @@ namespace splunk_eventhubs.Processor
         private readonly string resourceGroup;
         private readonly string ehnamespace;
         private readonly HttpClient httpClient;
+        private readonly ILogger _logger;
 
-        public LogEventProcessorFactory(ConsumersRepository consumersRepository, string subscription, string resourceGroup, string ehnamespace, HttpClient httpClient)
+        public LogEventProcessorFactory(ILogger logger, ConsumersRepository consumersRepository, string subscription, string resourceGroup, string ehnamespace, HttpClient httpClient)
         {
+            _logger = logger;
             _consumersRepository = consumersRepository;
             this.subscription = subscription;
             this.resourceGroup = resourceGroup;
@@ -177,6 +204,7 @@ namespace splunk_eventhubs.Processor
         }
         public IEventProcessor CreateEventProcessor(PartitionContext context)
         {
+            _logger.LogDebug($"[PROCESSOR] {JsonConvert.SerializeObject(context, Formatting.Indented)}");
             return new LogEventProcessor(_consumersRepository, subscription, resourceGroup, ehnamespace, httpClient);
         }
     }
@@ -188,8 +216,10 @@ namespace splunk_eventhubs.Processor
         private readonly string ehnamespace;
         private readonly HttpClient httpClient;
 
+        
         public LogEventProcessor(ConsumersRepository consumersRepository, string subscription, string resourceGroup, string ehnamespace, HttpClient httpClient)
         {
+            
             _consumersRepository = consumersRepository;
             this.subscription = subscription;
             this.resourceGroup = resourceGroup;
@@ -253,11 +283,15 @@ namespace splunk_eventhubs.Processor
             {
                 try
                 {
+                    // Console.WriteLine($"POST {httpClient.BaseAddress}/services/collector \n HEADERS: {JsonConvert.SerializeObject(httpClient.DefaultRequestHeaders, Formatting.Indented)} \n BODY: {sb.ToString()} ");
                     var response = await httpClient.PostAsync("/services/collector", new StringContent(sb.ToString()));
                     if (!response.IsSuccessStatusCode)
                     {
                         Console.WriteLine(response);
                         Console.WriteLine(await response.Content.ReadAsStringAsync());
+                    } else {
+                        long sequence = messages.Max(m => m.SystemProperties.SequenceNumber);
+                        Console.WriteLine($"[INFO] [{DateTime.UtcNow.ToString("u")}] Processed {sequence} Partition {context.PartitionId} Eventhub {context.EventHubPath}");
                     }
                 }
                 catch (Exception ex)
